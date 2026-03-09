@@ -14,14 +14,15 @@ const errorEl = document.getElementById('error');
 let gameId = null;
 let clientId = null;
 
-const pieceMap = { K:'♔', Q:'♕', R:'♖', B:'♗', N:'♘', P:'♙', k:'♚', q:'♛', r:'♜', b:'♝', n:'♞', p:'♟' };
+const pieceMap = { K:'♚', Q:'♛', R:'♜', B:'♝', N:'♞', P:'♟', k:'♔', q:'♕', r:'♖', b:'♗', n:'♘', p:'♙' };
 
 function render(state) {
   roleEl.textContent = state.role === 'w' ? 'White' : state.role === 'b' ? 'Black' : 'Spectator';
   turnEl.textContent = state.turn === 'w' ? 'White' : 'Black';
   statusEl.textContent = state.status.result || (state.status.check ? 'Check!' : 'In progress');
 
-  const isBlackPerspective = state.role === 'b';
+  const perspective = state.role === 'spectator' ? state.turn : state.role;
+  const isBlackPerspective = perspective === 'b';
   const files = isBlackPerspective
     ? ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a']
     : ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -31,14 +32,16 @@ function render(state) {
 
   let out = `  ${files.join(' ')}\n`;
   for (let r = 0; r < 8; r++) {
-    const boardRow = isBlackPerspective ? 7 - r : r;
-    out += `${ranks[r]} `;
+    const rank = ranks[r];
+    const boardRow = 8 - rank;
+    out += `${rank} `;
     for (let c = 0; c < 8; c++) {
-      const boardCol = isBlackPerspective ? 7 - c : c;
+      const file = files[c];
+      const boardCol = file.charCodeAt(0) - 97;
       const p = state.board[boardRow][boardCol];
       out += `${p ? pieceMap[p] : '·'} `;
     }
-    out += `${ranks[r]}\n`;
+    out += `${rank}\n`;
   }
   out += `  ${files.join(' ')}`;
   boardEl.textContent = out;
