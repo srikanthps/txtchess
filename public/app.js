@@ -21,16 +21,26 @@ function render(state) {
   turnEl.textContent = state.turn === 'w' ? 'White' : 'Black';
   statusEl.textContent = state.status.result || (state.status.check ? 'Check!' : 'In progress');
 
-  let out = '  a b c d e f g h\n';
+  const isBlackPerspective = state.role === 'b';
+  const files = isBlackPerspective
+    ? ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a']
+    : ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+  const ranks = isBlackPerspective
+    ? [1, 2, 3, 4, 5, 6, 7, 8]
+    : [8, 7, 6, 5, 4, 3, 2, 1];
+
+  let out = `  ${files.join(' ')}\n`;
   for (let r = 0; r < 8; r++) {
-    out += `${8-r} `;
+    const boardRow = isBlackPerspective ? 7 - r : r;
+    out += `${ranks[r]} `;
     for (let c = 0; c < 8; c++) {
-      const p = state.board[r][c];
+      const boardCol = isBlackPerspective ? 7 - c : c;
+      const p = state.board[boardRow][boardCol];
       out += `${p ? pieceMap[p] : '·'} `;
     }
-    out += `${8-r}\n`;
+    out += `${ranks[r]}\n`;
   }
-  out += '  a b c d e f g h';
+  out += `  ${files.join(' ')}`;
   boardEl.textContent = out;
 
   historyEl.innerHTML = '';
