@@ -14,7 +14,7 @@ const errorEl = document.getElementById('error');
 let gameId = null;
 let clientId = null;
 
-const pieceMap = { K:'♔', Q:'♕', R:'♖', B:'♗', N:'♘', P:'♙', k:'♚', q:'♛', r:'♜', b:'♝', n:'♞', p:'♟' };
+const pieceMap = { K:'♚', Q:'♛', R:'♜', B:'♝', N:'♞', P:'♟', k:'♔', q:'♕', r:'♖', b:'♗', n:'♘', p:'♙' };
 
 function render(state) {
   roleEl.textContent = state.role === 'w' ? 'White' : state.role === 'b' ? 'Black' : 'Spectator';
