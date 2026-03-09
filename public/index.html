@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TxtChess</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main>
+    <h1>TxtChess</h1>
+    <p>Play chess by entering text notation (SAN like <code>Nf3</code>, <code>O-O</code> or UCI like <code>e2e4</code>).</p>
+    <div id="lobby">
+      <button id="createBtn">Create new shared game URL</button>
+      <p id="share"></p>
+    </div>
+
+    <section id="game" class="hidden">
+      <p><strong>Role:</strong> <span id="role"></span></p>
+      <p><strong>Turn:</strong> <span id="turn"></span></p>
+      <p><strong>Status:</strong> <span id="status"></span></p>
+      <pre id="board"></pre>
+
+      <form id="moveForm">
+        <label for="notation">Move notation</label>
+        <input id="notation" autocomplete="off" placeholder="e4 or e2e4 or Nf3" />
+        <button type="submit">Submit move</button>
+      </form>
+      <p id="error" class="error"></p>
+      <h3>Moves</h3>
+      <ol id="history"></ol>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
