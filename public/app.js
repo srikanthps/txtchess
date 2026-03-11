@@ -16,10 +16,13 @@ const errorEl = document.getElementById('error');
 let gameId = null;
 let clientId = null;
 let suggestController = null;
+let latestState = null;
+let previewMove = null;
 
 const pieceMap = { K:'♚', Q:'♛', R:'♜', B:'♝', N:'♞', P:'♟', k:'♔', q:'♕', r:'♖', b:'♗', n:'♘', p:'♙' };
 
 function render(state) {
+  latestState = state;
   roleEl.textContent = state.role === 'w' ? 'White' : state.role === 'b' ? 'Black' : 'Spectator';
   turnEl.textContent = state.turn === 'w' ? 'White' : 'Black';
   statusEl.textContent = state.status.result || (state.status.check ? 'Check!' : 'In progress');
@@ -41,13 +44,20 @@ function render(state) {
     for (let c = 0; c < 8; c++) {
       const file = files[c];
       const boardCol = file.charCodeAt(0) - 97;
+      const square = `${file}${rank}`;
       const p = state.board[boardRow][boardCol];
-      out += `${p ? pieceMap[p] : '·'} `;
+      const symbol = p ? pieceMap[p] : '·';
+      if (previewMove && previewMove.to === square) {
+        const previewPiece = pieceMap[previewMove.piece] || symbol;
+        out += `<span class="preview-piece">${previewPiece}</span> `;
+      } else {
+        out += `${symbol} `;
+      }
     }
     out += `${rank}\n`;
   }
   out += `  ${files.join(' ')}`;
-  boardEl.textContent = out;
+  boardEl.innerHTML = out;
 
   historyEl.innerHTML = '';
   state.history.forEach((m) => {
@@ -60,6 +70,7 @@ function render(state) {
   notationInput.disabled = !myTurn || !!state.status.result;
   moveForm.querySelector('button').disabled = notationInput.disabled;
   if (!myTurn || state.status.result) {
+    previewMove = null;
     previewEl.textContent = '';
     suggestionsList.innerHTML = '';
   }
@@ -109,6 +120,7 @@ moveForm.addEventListener('submit', async (e) => {
     return;
   }
   notationInput.value = '';
+  previewMove = null;
   previewEl.textContent = '';
   suggestionsList.innerHTML = '';
   render(data);
@@ -119,6 +131,8 @@ notationInput.addEventListener('input', async () => {
 
   const text = notationInput.value.trim();
   if (!text) {
+    previewMove = null;
+    if (latestState) render(latestState);
     previewEl.textContent = '';
     suggestionsList.innerHTML = '';
     return;
@@ -142,11 +156,15 @@ notationInput.addEventListener('input', async () => {
     });
 
     if (!data.suggestions.length) {
+      previewMove = null;
+      if (latestState) render(latestState);
       previewEl.textContent = 'No legal moves match this text yet.';
       return;
     }
 
     const best = data.suggestions[0];
+    previewMove = { to: best.to, piece: best.piece };
+    if (latestState) render(latestState);
     const piece = pieceMap[best.piece] || best.piece;
     const action = best.isExact ? 'Ready:' : 'Try:';
     previewEl.textContent = `${action} ${best.san} (${best.uci}) — ${piece} from ${best.from} to ${best.to}. Press Enter to confirm.`;
