@@ -80,6 +80,19 @@ const server = http.createServer((req, res) => {
     return json(res, 200, gameState(game, clientId));
   }
 
+
+  const suggest = pathname.match(/^\/api\/game\/([a-f0-9]+)\/suggest$/);
+  if (suggest && req.method === 'GET') {
+    const game = getGame(suggest[1]);
+    const clientId = url.searchParams.get('clientId');
+    const text = url.searchParams.get('text') || '';
+    if (!clientId || !game.clients.has(clientId)) return json(res, 400, { error: 'Unknown client' });
+    const role = roleOf(game, clientId);
+    if (['w', 'b'].includes(role) && game.engine.turn !== role) return json(res, 200, { suggestions: [] });
+    if (game.engine.status().result) return json(res, 200, { suggestions: [] });
+    return json(res, 200, { suggestions: game.engine.suggestions(text) });
+  }
+
   const move = pathname.match(/^\/api\/game\/([a-f0-9]+)\/move$/);
   if (move && req.method === 'POST') {
     const game = getGame(move[1]);

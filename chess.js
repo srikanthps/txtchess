@@ -341,6 +341,36 @@ class ChessGame {
     });
   }
 
+  suggestions(text) {
+    const raw = (text || '').trim();
+    const normalized = raw.replace(/[+#]$/,'').replace(/0-0-0/ig, 'O-O-O').replace(/0-0/ig, 'O-O');
+    const legal = this.legalMoves();
+    const ranked = [];
+
+    for (const move of legal) {
+      const san = this.sanForMove(move, legal);
+      const sanClean = san.replace(/[+#]$/, '');
+      const uci = `${move.from}${move.to}${move.promotion || ''}`;
+      const sanPrefix = sanClean.toLowerCase().startsWith(normalized.toLowerCase());
+      const uciPrefix = uci.toLowerCase().startsWith(raw.toLowerCase());
+      if (!raw || sanPrefix || uciPrefix) {
+        ranked.push({ move, san, sanClean, uci, score: sanClean.toLowerCase() === normalized.toLowerCase() || uci.toLowerCase() === raw.toLowerCase() ? 2 : 1 });
+      }
+    }
+
+    ranked.sort((a, b) => b.score - a.score || a.sanClean.localeCompare(b.sanClean));
+
+    return ranked.map(({ move, san, uci }) => ({
+      san,
+      uci,
+      from: move.from,
+      to: move.to,
+      piece: move.piece,
+      promotion: move.promotion || null,
+      isExact: san.replace(/[+#]$/, '').toLowerCase() === normalized.toLowerCase() || uci.toLowerCase() === raw.toLowerCase()
+    }));
+  }
+
   move(text) {
     const move = this.parseMoveText(text);
     if (!move) return null;
