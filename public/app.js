@@ -9,10 +9,13 @@ const boardEl = document.getElementById('board');
 const historyEl = document.getElementById('history');
 const moveForm = document.getElementById('moveForm');
 const notationInput = document.getElementById('notation');
+const suggestionsList = document.getElementById('suggestions');
+const previewEl = document.getElementById('preview');
 const errorEl = document.getElementById('error');
 
 let gameId = null;
 let clientId = null;
+let suggestController = null;
 
 const pieceMap = { K:'♚', Q:'♛', R:'♜', B:'♝', N:'♞', P:'♟', k:'♔', q:'♕', r:'♖', b:'♗', n:'♘', p:'♙' };
 
@@ -56,6 +59,10 @@ function render(state) {
   const myTurn = (state.role === state.turn);
   notationInput.disabled = !myTurn || !!state.status.result;
   moveForm.querySelector('button').disabled = notationInput.disabled;
+  if (!myTurn || state.status.result) {
+    previewEl.textContent = '';
+    suggestionsList.innerHTML = '';
+  }
 }
 
 async function joinGame(id) {
@@ -102,7 +109,54 @@ moveForm.addEventListener('submit', async (e) => {
     return;
   }
   notationInput.value = '';
+  previewEl.textContent = '';
+  suggestionsList.innerHTML = '';
   render(data);
+});
+
+notationInput.addEventListener('input', async () => {
+  if (!gameId || !clientId || notationInput.disabled) return;
+
+  const text = notationInput.value.trim();
+  if (!text) {
+    previewEl.textContent = '';
+    suggestionsList.innerHTML = '';
+    return;
+  }
+
+  if (suggestController) suggestController.abort();
+  suggestController = new AbortController();
+
+  try {
+    const params = new URLSearchParams({ clientId, text });
+    const res = await fetch(`/api/game/${gameId}/suggest?${params.toString()}`, { signal: suggestController.signal });
+    if (!res.ok) return;
+    const data = await res.json();
+
+    suggestionsList.innerHTML = '';
+    data.suggestions.slice(0, 8).forEach((s) => {
+      const option = document.createElement('option');
+      option.value = s.san;
+      option.label = `${s.san} (${s.uci})`;
+      suggestionsList.appendChild(option);
+    });
+
+    if (!data.suggestions.length) {
+      previewEl.textContent = 'No legal moves match this text yet.';
+      return;
+    }
+
+    const best = data.suggestions[0];
+    const piece = pieceMap[best.piece] || best.piece;
+    const action = best.isExact ? 'Ready:' : 'Try:';
+    previewEl.textContent = `${action} ${best.san} (${best.uci}) — ${piece} from ${best.from} to ${best.to}. Press Enter to confirm.`;
+    if (data.suggestions.length === 1 && !best.isExact && best.san.toLowerCase().startsWith(text.toLowerCase())) {
+      notationInput.value = best.san;
+      notationInput.setSelectionRange(text.length, best.san.length);
+    }
+  } catch (err) {
+    if (err.name !== 'AbortError') previewEl.textContent = 'Could not load move suggestions.';
+  }
 });
 
 const match = location.pathname.match(/^\/game\/([a-f0-9]+)$/);

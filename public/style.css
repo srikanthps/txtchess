@@ -12,3 +12,5 @@ pre { background: #1a2232; border: 1px solid #3b4862; padding: 12px; border-radi
 .hidden { display: none; }
 .error { color: #ff8b8b; min-height: 1.2em; }
 code { background: #1a2232; padding: 2px 4px; border-radius: 4px; }
+
+.preview { color: #9fd0ff; min-height: 1.2em; }
