@@ -25,6 +25,16 @@ pre { background: #1a2232; border: 1px solid #3b4862; padding: 12px; border-radi
   background: #769656;
   color: #f8f9ea;
 }
+
+#board .square.piece-white {
+  color: #f8f9ea;
+  text-shadow: 0 0 1px #000, 0 0 2px #000;
+}
+
+#board .square.piece-black {
+  color: #121212;
+  text-shadow: 0 0 1px rgba(255,255,255,0.35);
+}
 .hidden { display: none; }
 .error { color: #ff8b8b; min-height: 1.2em; }
 code { background: #1a2232; padding: 2px 4px; border-radius: 4px; }
