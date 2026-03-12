@@ -19,7 +19,12 @@ let suggestController = null;
 let latestState = null;
 let previewMove = null;
 
-const pieceMap = { K:'♚', Q:'♛', R:'♜', B:'♝', N:'♞', P:'♟', k:'♔', q:'♕', r:'♖', b:'♗', n:'♘', p:'♙' };
+const pieceMap = { K:'♚', Q:'♛', R:'♜', B:'♝', N:'♞', P:'♟', k:'♚', q:'♛', r:'♜', b:'♝', n:'♞', p:'♟' };
+
+function getPieceColor(piece) {
+  if (!piece) return null;
+  return piece === piece.toUpperCase() ? 'white' : 'black';
+}
 
 function render(state) {
   latestState = state;
@@ -36,10 +41,12 @@ function render(state) {
     ? [1, 2, 3, 4, 5, 6, 7, 8]
     : [8, 7, 6, 5, 4, 3, 2, 1];
 
-  const renderSquare = (file, rank, symbol, previewPiece) => {
+  const renderSquare = (file, rank, symbol, pieceColor, previewPiece, previewPieceColor) => {
     const boardCol = file.charCodeAt(0) - 97;
     const isLightSquare = (boardCol + rank) % 2 === 0;
     const classes = ['square', isLightSquare ? 'light' : 'dark'];
+    const effectivePieceColor = previewPiece ? previewPieceColor : pieceColor;
+    if (effectivePieceColor) classes.push(`piece-${effectivePieceColor}`);
     if (previewPiece) classes.push('preview-piece');
     return `<span class="${classes.join(' ')}">${previewPiece || symbol}</span>`;
   };
@@ -55,11 +62,13 @@ function render(state) {
       const square = `${file}${rank}`;
       const p = state.board[boardRow][boardCol];
       const symbol = p ? pieceMap[p] : '·';
+      const pieceColor = getPieceColor(p);
       if (previewMove && previewMove.to === square) {
         const previewPiece = pieceMap[previewMove.piece] || symbol;
-        out += `${renderSquare(file, rank, symbol, previewPiece)}`;
+        const previewPieceColor = getPieceColor(previewMove.piece) || pieceColor;
+        out += `${renderSquare(file, rank, symbol, pieceColor, previewPiece, previewPieceColor)}`;
       } else {
-        out += `${renderSquare(file, rank, symbol)}`;
+        out += `${renderSquare(file, rank, symbol, pieceColor)}`;
       }
     }
     out += `${rank}\n`;
