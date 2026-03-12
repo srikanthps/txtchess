@@ -41,10 +41,14 @@ function render(state) {
     ? [1, 2, 3, 4, 5, 6, 7, 8]
     : [8, 7, 6, 5, 4, 3, 2, 1];
 
+  const lastMove = state.history[state.history.length - 1] || null;
   const renderSquare = (file, rank, symbol, pieceColor, previewPiece, previewPieceColor) => {
     const boardCol = file.charCodeAt(0) - 97;
+    const square = `${file}${rank}`;
     const isLightSquare = (boardCol + rank) % 2 === 0;
     const classes = ['square', isLightSquare ? 'light' : 'dark'];
+    if (lastMove?.from === square) classes.push('last-move-from');
+    if (lastMove?.to === square) classes.push('last-move-to');
     const effectivePieceColor = previewPiece ? previewPieceColor : pieceColor;
     if (effectivePieceColor) classes.push(`piece-${effectivePieceColor}`);
     if (previewPiece) classes.push('preview-piece');
@@ -61,7 +65,7 @@ function render(state) {
       const boardCol = file.charCodeAt(0) - 97;
       const square = `${file}${rank}`;
       const p = state.board[boardRow][boardCol];
-      const symbol = p ? pieceMap[p] : '·';
+      const symbol = p ? pieceMap[p] : ' ';
       const pieceColor = getPieceColor(p);
       if (previewMove && previewMove.to === square) {
         const previewPiece = pieceMap[previewMove.piece] || symbol;
