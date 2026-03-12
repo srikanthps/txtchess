@@ -36,6 +36,14 @@ function render(state) {
     ? [1, 2, 3, 4, 5, 6, 7, 8]
     : [8, 7, 6, 5, 4, 3, 2, 1];
 
+  const renderSquare = (file, rank, symbol, previewPiece) => {
+    const boardCol = file.charCodeAt(0) - 97;
+    const isLightSquare = (boardCol + rank) % 2 === 0;
+    const classes = ['square', isLightSquare ? 'light' : 'dark'];
+    if (previewPiece) classes.push('preview-piece');
+    return `<span class="${classes.join(' ')}">${previewPiece || symbol}</span>`;
+  };
+
   let out = `  ${files.join(' ')}\n`;
   for (let r = 0; r < 8; r++) {
     const rank = ranks[r];
@@ -49,9 +57,9 @@ function render(state) {
       const symbol = p ? pieceMap[p] : '·';
       if (previewMove && previewMove.to === square) {
         const previewPiece = pieceMap[previewMove.piece] || symbol;
-        out += `<span class="preview-piece">${previewPiece}</span> `;
+        out += `${renderSquare(file, rank, symbol, previewPiece)}`;
       } else {
-        out += `${symbol} `;
+        out += `${renderSquare(file, rank, symbol)}`;
       }
     }
     out += `${rank}\n`;
