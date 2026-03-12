@@ -16,21 +16,26 @@
     </div>
 
     <section id="game" class="hidden">
-      <p><strong>Role:</strong> <span id="role"></span></p>
-      <p><strong>Turn:</strong> <span id="turn"></span></p>
-      <p><strong>Status:</strong> <span id="status"></span></p>
-      <pre id="board"></pre>
+      <div class="board-panel">
+        <pre id="board"></pre>
+      </div>
 
-      <form id="moveForm">
-        <label for="notation">Move notation</label>
-        <input id="notation" list="suggestions" autocomplete="off" placeholder="e4 or e2e4 or Nf3" />
-        <datalist id="suggestions"></datalist>
-        <button type="submit">Submit move</button>
-      </form>
-      <p id="preview" class="preview"></p>
-      <p id="error" class="error"></p>
-      <h3>Moves</h3>
-      <ol id="history"></ol>
+      <aside class="info-panel">
+        <p><strong>Role:</strong> <span id="role"></span></p>
+        <p><strong>Turn:</strong> <span id="turn"></span></p>
+        <p><strong>Status:</strong> <span id="status"></span></p>
+
+        <form id="moveForm">
+          <label for="notation">Move notation</label>
+          <input id="notation" list="suggestions" autocomplete="off" placeholder="e4 or e2e4 or Nf3" />
+          <datalist id="suggestions"></datalist>
+          <button type="submit">Submit move</button>
+        </form>
+        <p id="preview" class="preview"></p>
+        <p id="error" class="error"></p>
+        <h3>Moves</h3>
+        <ol id="history"></ol>
+      </aside>
     </section>
   </main>
   <script src="/app.js"></script>

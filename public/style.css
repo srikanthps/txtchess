@@ -1,27 +1,69 @@
 body { font-family: system-ui, sans-serif; margin: 0; background: #10151f; color: #eff4ff; }
-main { max-width: 1100px; margin: 0 auto; padding: 16px; min-height: 100vh; }
+main { max-width: 1400px; margin: 0 auto; padding: 16px; min-height: 100vh; box-sizing: border-box; }
 button, input { font: inherit; padding: 8px 10px; }
 pre { background: #1a2232; border: 1px solid #3b4862; padding: 12px; border-radius: 8px; line-height: 1.3; }
 #board {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: clamp(2rem, 9.2vmin, 5.8rem);
+  font-size: clamp(1.5rem, 6.4vmin, 4.4rem);
   line-height: 1.1;
   letter-spacing: 0;
-  padding: clamp(10px, 1.8vmin, 22px);
-  margin: 8px 0 16px;
-  width: fit-content;
-  max-width: 100%;
-  overflow: auto;
+  margin: 0;
+  width: min(80vmin, 80vw);
+  height: min(80vmin, 80vh);
+  max-width: 80vw;
+  max-height: 80vh;
+  padding: 0.4em;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 #game {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 20px;
+  width: 100%;
 }
 
-#game > * {
-  width: min(100%, 980px);
+.board-panel {
+  flex: 0 0 auto;
+}
+
+.info-panel {
+  flex: 1 1 320px;
+  max-width: 420px;
+}
+
+#moveForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#notation {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#history {
+  max-height: 35vh;
+  overflow: auto;
+}
+
+@media (max-width: 980px) {
+  #game {
+    flex-direction: column;
+  }
+
+  .info-panel {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  #board {
+    width: min(80vw, 80vh);
+    height: min(80vw, 80vh);
+  }
 }
 
 #board .square {
